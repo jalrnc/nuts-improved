@@ -4794,6 +4794,7 @@ UR_OBJECT user;
 int people;
 {
 UR_OBJECT u;
+size_t i;
 int cnt,total,invis,mins,remote,idle,logins;
 char line[USER_NAME_LEN+USER_DESC_LEN*2];
 char rname[SERV_NAME_LEN+2],portstr[5],idlestr[6],sockstr[3];
@@ -4827,7 +4828,10 @@ for(u=user_first;u!=NULL;u=u->next) {
 		}
 	if (people) {
 		if (u->afk) strcpy(idlestr," AFK");
-		else sprintf(idlestr,"%4d",idle);
+		else {
+			i=snprintf(idlestr,sizeof(idlestr),"%4d",idle);
+			if (i>4) sprintf(idlestr,"%4d",9999);
+		}
 		if (u->type==REMOTE_TYPE) strcpy(sockstr," -");
 		else sprintf(sockstr,"%2d",u->socket);
 		sprintf(text,"%-15s :  %4s   %s    %s  %s %s %4d  %s  %s\n",u->name,level_name[u->level],sockstr,noyes1[u->ignall],noyes1[u->vis],idlestr,mins,portstr,u->site);
