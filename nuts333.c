@@ -4041,7 +4041,7 @@ else {
 	}
 write_syslog(text,0);
 for(nl=nl_first;nl!=NULL;nl=nl->next) shutdown_netlink(nl);
-for(u=user_first;u!=NULL;u=u->next) disconnect_user(u);
+while (user_first) { u=user_first; user_first=u->next; disconnect_user(u); }
 for(i=0;i<3;++i) close(listen_sock[i]);
 if (reboot) {
 	/* If someone has changed the binary or the config filename while this
