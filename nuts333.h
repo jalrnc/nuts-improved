@@ -174,7 +174,7 @@ char *command[]={
 "rstat",   "swban",    "afk",       "cls",    "colour",
 "ignshout","igntell",  "suicide",   "delete", "reboot",
 "recount", "revtell",  "save",      "load",   "sayto",
-"*"
+"think",   "*"
 };
 
 
@@ -198,7 +198,8 @@ VIEWLOG,  ACCREQ,   REVCLR,   CREATE, DESTROY,
 MYCLONES, ALLCLONES,SWITCH,   CSAY,   CHEAR,
 RSTAT,    SWBAN,    AFK,      CLS,    COLOUR,
 IGNSHOUT, IGNTELL,  SUICIDE,  DELETE, REBOOT,
-RECOUNT,  REVTELL,  SAVE,     LOAD,   SAYTO
+RECOUNT,  REVTELL,  SAVE,     LOAD,   SAYTO,
+THINK
 } com_num;
 
 
@@ -223,7 +224,8 @@ WIZ ,NEW, USER,ARCH,ARCH,
 ARCH,USER,ARCH,ARCH,ARCH,
 WIZ, ARCH,USER,NEW ,NEW,
 USER,USER,NEW, GOD, GOD,
-GOD, USER,ARCH,GOD, USER
+GOD, USER,ARCH,GOD, USER,
+USER
 };
 
 /*
@@ -486,3 +488,4 @@ void write_user(UR_OBJECT, char *);
 void save();
 void load();
 void sayto(UR_OBJECT,char *);
+void think(UR_OBJECT,char *);

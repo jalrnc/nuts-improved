@@ -212,7 +212,7 @@ while(1) {
 			}
 		if (misc_ops(user,inpstr))  {  user=next;  continue;  }
 		com_num=-1;
-		if (user->command_mode || strchr(".;!<>+#-",inpstr[0]))
+		if (user->command_mode || strchr(".;!<>+#-=",inpstr[0]))
 			exec_com(user,inpstr);
 		else say(user,inpstr);
 		if (!destructed) {
@@ -3770,6 +3770,7 @@ if (!strcmp(word[0],"<")) strcpy(word[0],"pemote");
 if (!strcmp(word[0],"+")) strcpy(word[0],"echo");
 if (!strcmp(word[0],"!")) strcpy(word[0],"shout");
 if (!strcmp(word[0],"-")) strcpy(word[0],"sayto");
+if (!strcmp(word[0],"=")) strcpy(word[0],"think");
 if (inpstr[0]==';') strcpy(word[0],"emote");
 else if (inpstr[0]=='#') strcpy(word[0],"semote");
 	else inpstr=remove_first(inpstr);
@@ -3936,6 +3937,7 @@ switch(com_num) {
 	case SAVE : save();  break;
 	case LOAD : load();  break;
 	case SAYTO : sayto(user,inpstr);  break;
+	case THINK : think(user,inpstr);  break;
 	default: write_user(user,"Command not executed in exec_com().\n");
 	}
 }
@@ -8059,5 +8061,26 @@ char *inpstr;
 	if (user->vis) name=user->name; else name=invisname;
 	sprintf(text,"%s %ss to %s: %s\n",name,type,n,inpstr);
 	write_room_except(user->room,text,user);
+	record(user->room,text);
+}
+
+void think(user,inpstr)
+UR_OBJECT user;
+char *inpstr;
+{
+	char *name;
+
+	if (user->muzzled) {
+		write_user(user,"You are muzzled, you cannot emote.\n"); return;
+	}
+	if (word_count<2 && inpstr[1]<33) {
+		write_user(user,"Emote what?\n"); return;
+	}
+	if (ban_swearing && contains_swearing(inpstr)) {
+		write_user(user,noswearing); return;
+	}
+	if (user->vis) name=user->name; else name=invisname;
+	sprintf(text,"%s thinks . o O ( %s )\n",name,inpstr);
+	write_room(user->room,text);
 	record(user->room,text);
 }
