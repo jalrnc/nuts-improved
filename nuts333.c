@@ -212,7 +212,7 @@ while(1) {
 			}
 		if (misc_ops(user,inpstr))  {  user=next;  continue;  }
 		com_num=-1;
-		if (user->command_mode || strchr(".;!<>-#",inpstr[0]))
+		if (user->command_mode || strchr(".;!<>+#",inpstr[0]))
 			exec_com(user,inpstr);
 		else say(user,inpstr);
 		if (!destructed) {
@@ -3767,7 +3767,7 @@ if (!comword[0]) {
 /* get com_num */
 if (!strcmp(word[0],">")) strcpy(word[0],"tell");
 if (!strcmp(word[0],"<")) strcpy(word[0],"pemote");
-if (!strcmp(word[0],"-")) strcpy(word[0],"echo");
+if (!strcmp(word[0],"+")) strcpy(word[0],"echo");
 if (!strcmp(word[0],"!")) strcpy(word[0],"shout");
 if (inpstr[0]==';') strcpy(word[0],"emote");
 else if (inpstr[0]=='#') strcpy(word[0],"semote");
@@ -4294,7 +4294,7 @@ if (word_count<2) {
 	}
 sprintf(text,"(%s) ",user->name);
 write_level(WIZ,1,text,NULL);
-sprintf(text,"- %s\n",inpstr);
+sprintf(text,"+ %s\n",inpstr);
 write_room(user->room,text);
 record(user->room,text);
 }
