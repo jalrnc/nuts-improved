@@ -3932,6 +3932,7 @@ switch(com_num) {
 	case REBOOT  : reboot_com(user);  break;
 	case RECOUNT : check_messages(user,2);  break;
 	case REVTELL : revtell(user);  break;
+	case SAVE : save();  break;
 	default: write_user(user,"Command not executed in exec_com().\n");
 	}
 }
@@ -7958,3 +7959,9 @@ switch(force) {
 	}
 }
 /**************************** Made in England *******************************/
+
+void save()
+{
+	UR_OBJECT u;
+	for (u=user_first;u!=NULL;u=u->next) save_user_details(u,1);
+}

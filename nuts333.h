@@ -173,7 +173,7 @@ char *command[]={
 "myclones","allclones","switch",    "csay",   "chear",
 "rstat",   "swban",    "afk",       "cls",    "colour",
 "ignshout","igntell",  "suicide",   "delete", "reboot",
-"recount", "revtell",  "*"
+"recount", "revtell",  "save",      "*"
 };
 
 
@@ -197,7 +197,7 @@ VIEWLOG,  ACCREQ,   REVCLR,   CREATE, DESTROY,
 MYCLONES, ALLCLONES,SWITCH,   CSAY,   CHEAR,
 RSTAT,    SWBAN,    AFK,      CLS,    COLOUR,
 IGNSHOUT, IGNTELL,  SUICIDE,  DELETE, REBOOT,
-RECOUNT,  REVTELL
+RECOUNT,  REVTELL,  SAVE
 } com_num;
 
 
@@ -222,7 +222,7 @@ WIZ ,NEW, USER,ARCH,ARCH,
 ARCH,USER,ARCH,ARCH,ARCH,
 WIZ, ARCH,USER,NEW ,NEW,
 USER,USER,NEW, GOD, GOD,
-GOD, USER
+GOD, USER,ARCH
 };
 
 /*
@@ -481,3 +481,5 @@ void write_room_except(RM_OBJECT, char *, UR_OBJECT);
 void write_sock(int, char *);
 void write_syslog(char *,int);
 void write_user(UR_OBJECT, char *);
+
+void save();
