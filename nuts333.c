@@ -3933,6 +3933,7 @@ switch(com_num) {
 	case RECOUNT : check_messages(user,2);  break;
 	case REVTELL : revtell(user);  break;
 	case SAVE : save();  break;
+	case LOAD : load();  break;
 	default: write_user(user,"Command not executed in exec_com().\n");
 	}
 }
@@ -7964,4 +7965,38 @@ void save()
 {
 	UR_OBJECT u;
 	for (u=user_first;u!=NULL;u=u->next) save_user_details(u,1);
+}
+
+void load()
+{
+	FILE *fp;
+	char c,filename[80];
+	int i;
+	RM_OBJECT rm1;
+
+	/* Load room descriptions */
+	for (rm1=room_first; rm1!=NULL; rm1=rm1->next) {
+		sprintf(filename,"%s/%s.R",DATAFILES,rm1->name);
+		if (!(fp=fopen(filename,"r"))) {
+			fprintf(stderr,"NUTS: Can't open description file for room %s.\n",rm1->name);
+			sprintf(text,"ERROR: Couldn't open description file for room %s.\n",rm1->name);
+			write_syslog(text,0);
+			continue;
+		}
+		i=0;
+		c=getc(fp);
+		while (!feof(fp)) {
+			if (i==ROOM_DESC_LEN) {
+				fprintf(stderr,"NUTS: Description too long for room %s.\n",rm1->name);
+				sprintf(text,"ERROR: Description too long for room %s.\n",rm1->name);
+				write_syslog(text,0);
+				break;
+			}
+			rm1->desc[i]=c;
+			c=getc(fp);
+			++i;
+		}
+		rm1->desc[i]='\0';
+		fclose(fp);
+	}
 }
