@@ -1405,6 +1405,7 @@ UR_OBJECT user;
 {
 UR_OBJECT u;
 char text2[ARR_SIZE];
+struct ignuser_struct *i;
 
 for(u=user_first;u!=NULL;u=u->next) {
 	if (u->login
@@ -1413,6 +1414,8 @@ for(u=user_first;u!=NULL;u=u->next) {
 	    || (u->ignall && !force_listen)
 	    || (u->ignshout && (com_num==SHOUT || com_num==SEMOTE))
 	    || u==user) continue;
+	for (i=u->ignusers;i!=NULL;i=i->next) if (!strcmp(user->name,i->name)) break;
+	if (i!=NULL) continue;
 	if (u->type==CLONE_TYPE) {
 		if (u->clone_hear==CLONE_HEAR_NOTHING || u->owner->ignall) continue;
 		/* Ignore anything not in clones room, eg shouts, system messages
@@ -2744,6 +2747,7 @@ user->clone_hear=CLONE_HEAR_ALL;
 user->malloc_start=NULL;
 user->malloc_end=NULL;
 user->owner=NULL;
+user->ignusers=NULL;
 for(i=0;i<REVTELL_LINES;++i) user->revbuff[i][0]='\0';
 return user;
 }
@@ -2754,6 +2758,8 @@ return user;
 void destruct_user(user)
 UR_OBJECT user;
 {
+struct ignuser_struct *i;
+
 /* Remove from linked list */
 if (user==user_first) {
 	user_first=user->next;
@@ -2767,6 +2773,7 @@ else {
 		}
 	else user->next->prev=user->prev;
 	}
+while (user->ignusers) { i=user->ignusers; user->ignusers=i->next; free(i); }
 free(user);
 destructed=1;
 }
@@ -3938,6 +3945,7 @@ switch(com_num) {
 	case LOAD : load();  break;
 	case SAYTO : sayto(user,inpstr);  break;
 	case THINK : think(user,inpstr);  break;
+	case IGNUSER : set_ignuser(user);  break;
 	default: write_user(user,"Command not executed in exec_com().\n");
 	}
 }
@@ -8083,4 +8091,52 @@ char *inpstr;
 	sprintf(text,"%s thinks . o O ( %s )\n",name,inpstr);
 	write_room(user->room,text);
 	record(user->room,text);
+}
+
+void set_ignuser(user)
+UR_OBJECT user;
+{
+	UR_OBJECT u;
+	struct ignuser_struct *i,*p;
+
+	if (word_count<2) {
+		if (user->ignusers==NULL) {
+			write_user(user,"You are not ignoring any users.\n"); return;
+		}
+		write_user(user,"You are currently ignoring the following people:\n");
+		for (i=user->ignusers;i!=NULL;i=i->next) {
+			if (i!=user->ignusers)
+				write_user(user,", ");
+			write_user(user,i->name);
+		}
+		write_user(user,"\n");
+		return;
+	}
+	if (!(u=get_user(word[1]))) {
+		write_user(user,notloggedon); return;
+	}
+	if (u==user) {
+		write_user(user,"You cannot ignore yourself!\n");
+		return;
+	}
+	for (p=NULL,i=user->ignusers;i!=NULL;p=i,i=i->next) {
+		if (!strcmp(u->name, i->name)) {
+			if (p!=NULL) p->next=i->next; else user->ignusers=i->next;
+			free(i);
+			sprintf(text,"You will once again listen to %s.\n",u->name);
+			write_user(user,text);
+			return;
+		}
+	}
+	if ((i=(struct ignuser_struct *)malloc(sizeof(struct ignuser_struct)))==NULL) {
+		write_syslog("ERROR: Memory allocation failure in set_ignuser().\n",0);
+		sprintf(text,"You cannot ignore %s at this time.\n",u->name);
+		write_user(user,text);
+		return;
+	}
+	strcpy(i->name,u->name);
+	i->next=user->ignusers;
+	user->ignusers=i;
+	sprintf(text,"You will now ignore speech from %s.\n",u->name);
+	write_user(user,text);
 }

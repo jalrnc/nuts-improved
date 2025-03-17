@@ -4,5 +4,5 @@
 This is a toggle command which will switch on or off the ability of other
 users to send you .tells.
 
-See: ignall, ignshout
+See: ignall, ignshout, ignuser
 

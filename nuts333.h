@@ -61,6 +61,11 @@
 #define CLONE_HEAR_SWEARS 1
 #define CLONE_HEAR_ALL 2
 
+struct ignuser_struct {
+	char name[USER_NAME_LEN+1];
+	struct ignuser_struct *next;
+};
+
 /* The elements vis, ignall, prompt, command_mode etc could all be bits in
    one flag variable as they're only ever 0 or 1, but I tried it and it
    made the code unreadable. Better to waste a few bytes */
@@ -82,6 +87,7 @@ struct user_struct {
 	char *malloc_start,*malloc_end;
 	struct netlink_struct *netlink,*pot_netlink;
 	struct user_struct *prev,*next,*owner;
+	struct ignuser_struct *ignusers;
 	};
 
 typedef struct user_struct* UR_OBJECT;
@@ -174,7 +180,7 @@ char *command[]={
 "rstat",   "swban",    "afk",       "cls",    "colour",
 "ignshout","igntell",  "suicide",   "delete", "reboot",
 "recount", "revtell",  "save",      "load",   "sayto",
-"think",   "*"
+"think",   "ignuser",  "*"
 };
 
 
@@ -199,7 +205,7 @@ MYCLONES, ALLCLONES,SWITCH,   CSAY,   CHEAR,
 RSTAT,    SWBAN,    AFK,      CLS,    COLOUR,
 IGNSHOUT, IGNTELL,  SUICIDE,  DELETE, REBOOT,
 RECOUNT,  REVTELL,  SAVE,     LOAD,   SAYTO,
-THINK
+THINK,    IGNUSER
 } com_num;
 
 
@@ -225,7 +231,7 @@ ARCH,USER,ARCH,ARCH,ARCH,
 WIZ, ARCH,USER,NEW ,NEW,
 USER,USER,NEW, GOD, GOD,
 GOD, USER,ARCH,GOD, USER,
-USER
+USER,USER
 };
 
 /*
@@ -489,3 +495,4 @@ void save();
 void load();
 void sayto(UR_OBJECT,char *);
 void think(UR_OBJECT,char *);
+void set_ignuser(UR_OBJECT);
