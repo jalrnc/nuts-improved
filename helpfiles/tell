@@ -6,5 +6,5 @@ Usage: tell <user> <message>
 This allows you to speak privately to another user without having to
 find a private room. The shortcut is '>'.
 
-See: say, shout
+See: say, sayto, shout
 

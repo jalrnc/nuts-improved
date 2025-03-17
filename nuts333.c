@@ -212,7 +212,7 @@ while(1) {
 			}
 		if (misc_ops(user,inpstr))  {  user=next;  continue;  }
 		com_num=-1;
-		if (user->command_mode || strchr(".;!<>+#",inpstr[0]))
+		if (user->command_mode || strchr(".;!<>+#-",inpstr[0]))
 			exec_com(user,inpstr);
 		else say(user,inpstr);
 		if (!destructed) {
@@ -3769,6 +3769,7 @@ if (!strcmp(word[0],">")) strcpy(word[0],"tell");
 if (!strcmp(word[0],"<")) strcpy(word[0],"pemote");
 if (!strcmp(word[0],"+")) strcpy(word[0],"echo");
 if (!strcmp(word[0],"!")) strcpy(word[0],"shout");
+if (!strcmp(word[0],"-")) strcpy(word[0],"sayto");
 if (inpstr[0]==';') strcpy(word[0],"emote");
 else if (inpstr[0]=='#') strcpy(word[0],"semote");
 	else inpstr=remove_first(inpstr);
@@ -3934,6 +3935,7 @@ switch(com_num) {
 	case REVTELL : revtell(user);  break;
 	case SAVE : save();  break;
 	case LOAD : load();  break;
+	case SAYTO : sayto(user,inpstr);  break;
 	default: write_user(user,"Command not executed in exec_com().\n");
 	}
 }
@@ -7999,4 +8001,63 @@ void load()
 		rm1->desc[i]='\0';
 		fclose(fp);
 	}
+}
+
+void sayto(user,inpstr)
+UR_OBJECT user;
+char *inpstr;
+{
+	UR_OBJECT u;
+	char type[10],*name,*n;
+
+	if (user->muzzled) {
+		write_user(user,"You are muzzled, you cannot speak.\n"); return;
+	}
+	if (word_count<3) {
+		write_user(user,"Say to whom what?\n"); return;
+	}
+	if (!(u=get_user(word[1]))) {
+		write_user(user,notloggedon); return;
+	}
+	if (u==user) {
+		write_user(user,"Talking to yourself is the first sign of madness.\n"); return;
+	}
+	if (user->room!=u->room) {
+		sprintf(text,"You cannot see %s, so you cannot say anything to them!\n",u->name);
+		write_user(user,text);
+		return;
+	}
+	if (user->room==NULL) {
+		sprintf(text,"You are offsite, so you cannot say anything to them!\n");
+		write_user(user,text);
+		return;
+	}
+	if (u->room==NULL) {
+		sprintf(text,"%s is offsite and would not be able to reply to you.\n",u->name);
+		write_user(user,text);
+		return;
+	}
+	if (ban_swearing && contains_swearing(inpstr)) {
+		write_user(user,noswearing);
+		return;
+	}
+	inpstr=remove_first(inpstr);
+	switch (inpstr[strlen(inpstr)-1]) {
+		case '?': strcpy(type,"ask"); break;
+		case '!': strcpy(type,"exclaim"); break;
+		default : strcpy(type,"say");
+	}
+	n = u->vis ? u->name : invisname;
+	if (user->type==CLONE_TYPE) {
+		sprintf(text,"(%s) Clone of %s %ss: %s\n",n,user->name,type,inpstr);
+		write_room(user->room,text);
+		record(user->room,text);
+		return;
+	}
+	sprintf(text,"You %s to %s: %s\n",type,u->name,inpstr);
+	write_user(user,text);
+	if (user->vis) name=user->name; else name=invisname;
+	sprintf(text,"%s %ss to %s: %s\n",name,type,n,inpstr);
+	write_room_except(user->room,text,user);
+	record(user->room,text);
 }

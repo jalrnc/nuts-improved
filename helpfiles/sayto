@@ -1,0 +1,10 @@
+
+* sayto *
+
+Usage: sayto <user> <message>
+
+This is used to direct speech to someone in the same room as yourself.
+The text will be seen by anyone in the room. Shortcut is '-'.
+
+See: say, shout, tell
+
