@@ -1414,8 +1414,10 @@ for(u=user_first;u!=NULL;u=u->next) {
 	    || (u->ignall && !force_listen)
 	    || (u->ignshout && (com_num==SHOUT || com_num==SEMOTE))
 	    || u==user) continue;
-	for (i=u->ignusers;i!=NULL;i=i->next) if (!strcmp(user->name,i->name)) break;
-	if (i!=NULL) continue;
+	if (user!=NULL) {
+		for (i=u->ignusers;i!=NULL;i=i->next) if (!strcmp(user->name,i->name)) break;
+		if (i!=NULL) continue;
+	}
 	if (u->type==CLONE_TYPE) {
 		if (u->clone_hear==CLONE_HEAR_NOTHING || u->owner->ignall) continue;
 		/* Ignore anything not in clones room, eg shouts, system messages
