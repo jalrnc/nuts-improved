@@ -4238,7 +4238,8 @@ if (word_count<2 && inpstr[1]<33) {
 if (user->vis) name=user->name; else name=invisname;
 if (inpstr[0]=='#') sprintf(text,"~OL!!~RS %s%s\n",name,inpstr+1);
 else sprintf(text,"~OL!!~RS %s %s\n",name,inpstr);
-write_room(NULL,text);
+write_user(user,text);
+write_room_except(NULL,text,user);
 }
 
 
